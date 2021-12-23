@@ -83,5 +83,23 @@ self.addEventListener('install', async (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  console.log(event.request.url);
+  // console.log(event.request.url);
+
+  if (event.request.url !== 'http://localhost:4000/api/auth/renew') return;
+  const resp = fetch(event.request)
+    .then((res) => {
+      // Network
+      // Guardar en cache la última respuesta obtenida del back
+      caches.open('cache-dynamic').then((cache) => {
+        cache.put(event.request, res);
+      });
+      // hay que clonar porque luego esta es la response que tiene que usar la app y no puede estar usada
+      return resp.clone();
+    })
+    .catch((err) => {
+      console.log('Offline response');
+      return caches.match(event.request);
+    });
+
+  event.respondWith(resp);
 });
