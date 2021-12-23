@@ -50,7 +50,8 @@ registerRoute(
 // precache, in this case same-origin .png requests like those from in public/
 registerRoute(
   // Add in any other file extensions or routing criteria as needed.
-  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
+  ({ url }) =>
+    url.origin === self.location.origin && url.pathname.endsWith('.png'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
   new StaleWhileRevalidate({
     cacheName: 'images',
     plugins: [
@@ -70,3 +71,13 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+// El self es el serviceWorker
+// Aquí colocamos todos los recursos que necesitamos para que la app funcione
+self.addEventListener('install', async (event) => {
+  const cache = await caches.open('cache-1');
+  await cache.addAll([
+    'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css',
+    '/favicon.ico',
+  ]);
+});
